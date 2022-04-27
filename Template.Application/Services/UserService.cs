@@ -75,5 +75,21 @@ namespace Template.Application.Services
 
             return true;
         }
+
+        public bool Delete (string id)
+        {
+            //se não consegui tranformar em guid - o id vai ser inserido no userId
+            if (!Guid.TryParse(id, out Guid userId))
+            {
+                throw new Exception("UserId is not valid");
+            }
+
+            //recupera o usuario não deletado
+            User _user = this.userRepository.Find(x => x.Id == userId && !x.IsDeleted);
+            if (_user == null)
+                throw new Exception("User not found");
+                        
+            return this.userRepository.Delete(_user);
+        }
     }
 }
