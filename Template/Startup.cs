@@ -8,10 +8,14 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Hosting;
+using System.Text;
 using Template.Application.AutoMapper;
 using Template.Data.Context;
 using Template.IoC;
 using Template.Swagger;
+using Template.Auth.Models;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.IdentityModel.Tokens;
 
 namespace Template
 {
@@ -23,6 +27,7 @@ namespace Template
         }
 
         public IConfiguration Configuration { get; }
+  
 
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
@@ -38,6 +43,29 @@ namespace Template
             services.AddAutoMapper(typeof(AutoMapperSetup));
             //configuração do swagger
             services.AddSwaggerConfiguration();
+            //---token JWT
+            //recupera a chave
+            var key = Encoding.ASCII.GetBytes(Settings.Secret);
+            //cria um objeto de autenticação
+            services.AddAuthentication(x =>
+            {
+                x.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+                x.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+            }).AddJwtBearer(x =>
+           {
+               //informa se e obrigatorio https
+               x.RequireHttpsMetadata = false;
+               //salva o token
+               x.SaveToken = true;
+               //parametros da validação do token
+               x.TokenValidationParameters = new TokenValidationParameters
+               {
+                   ValidateIssuerSigningKey = true,
+                   IssuerSigningKey = new SymmetricSecurityKey(key),
+                   ValidateIssuer = false,
+                   ValidateAudience = false
+               };
+           });
 
 
             // In production, the Angular files will be served from this directory
@@ -72,6 +100,10 @@ namespace Template
             }
 
             app.UseRouting();
+
+            //---token JWT sempre entre esses dois
+            app.UseAuthentication();
+            app.UseAuthorization();
 
             app.UseEndpoints(endpoints =>
             {

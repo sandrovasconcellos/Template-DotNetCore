@@ -45,7 +45,7 @@ namespace Template.Controllers
 
         [HttpPut]
         public IActionResult Put(UserViewModel userViewModel)
-        {            
+        {
             return Ok(this.userService.Put(userViewModel));
         }
 
@@ -53,6 +53,18 @@ namespace Template.Controllers
         public IActionResult Delete(string id)
         {
             return Ok(this.userService.Delete(id));
+        }
+
+        //nome da API
+        [HttpPost("authenticate")]
+        public IActionResult Authenticate(UserAuthenticateRequestViewModel  userViewModel)
+        {
+            ////para estudo
+            //UserAuthenticateResponseViewModel userAuthenticateResponseViewModel;
+            //userAuthenticateResponseViewModel = this.userService.Authenticate(userViewModel);
+            //return Ok(userAuthenticateResponseViewModel);
+
+            return Ok(this.userService.Authenticate(userViewModel));
         }
     }
 }

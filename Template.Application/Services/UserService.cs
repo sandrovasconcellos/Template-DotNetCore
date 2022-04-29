@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Text;
 using Template.Application.Interfaces;
 using Template.Application.ViewModels;
+using Template.Auth.Services;
 using Template.Domain.Entities;
 
 namespace Template.Application.Services
@@ -71,8 +72,6 @@ namespace Template.Application.Services
             //informa que esse objeto esta tracked, por isso precisamos informar no metodo FIND inclui o AsNoTracking().
             this.userRepository.Update(_user);
 
-            //ALTERAÇÃO DE TESTE NO GIT
-
             return true;
         }
 
@@ -90,6 +89,18 @@ namespace Template.Application.Services
                 throw new Exception("User not found");
                         
             return this.userRepository.Delete(_user);
+        }
+
+        public UserAuthenticateResponseViewModel Authenticate(UserAuthenticateRequestViewModel user)
+        {
+            //recupera o usuario do banco
+            User _user = this.userRepository.Find(x => !x.IsDeleted && x.Email.ToLower() == user.Email.ToLower());
+            if (_user == null)
+                throw new Exception("User not found");
+
+            //preenche o objeto UserViewModel com o objeto _user e cria o token, chama o construtor UserAuthenticateResponseViewModel
+            //devolve o objeto UserAuthenticateResponseViewModel
+            return new UserAuthenticateResponseViewModel(mapper.Map<UserViewModel>(_user), TokenService.GenerateToken(_user));
         }
     }
 }
