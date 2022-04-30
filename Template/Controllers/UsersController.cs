@@ -1,18 +1,22 @@
-﻿using Microsoft.AspNetCore.Http;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Security.Claims;
 using System.Threading.Tasks;
 using Template.Application.Interfaces;
 using Template.Application.ViewModels;
+using Template.Auth.Services;
 
 namespace Template.Controllers
 {
     //para chamar https://localhost:44386/api/users
+    //Authorize indica que é privado - o correto é privar tudo e ir liberando com a necessidade
 
     [Route("api/[controller]")]
-    [ApiController]
+    [ApiController, Authorize]
     public class UsersController : ControllerBase
     {
 
@@ -29,7 +33,7 @@ namespace Template.Controllers
             return Ok(this.userService.Get());
         }
 
-        [HttpPost]
+        [HttpPost, AllowAnonymous]
         public IActionResult Post(UserViewModel userViewModel)
         {
             return Ok(this.userService.Post(userViewModel));
@@ -49,14 +53,18 @@ namespace Template.Controllers
             return Ok(this.userService.Put(userViewModel));
         }
 
-        [HttpDelete("{id}")]
-        public IActionResult Delete(string id)
+        [HttpDelete()]
+        public IActionResult Delete()
         {
-            return Ok(this.userService.Delete(id));
+            //garante que so terá acesso o id logado.
+            string _userId = TokenService.GetValueFromClaim(HttpContext.User.Identity, ClaimTypes.NameIdentifier);
+
+            return Ok(this.userService.Delete(_userId));
         }
 
         //nome da API
-        [HttpPost("authenticate")]
+        //AllowAnonymous: libera para ser publica
+        [HttpPost("authenticate"), AllowAnonymous]
         public IActionResult Authenticate(UserAuthenticateRequestViewModel  userViewModel)
         {
             ////para estudo
