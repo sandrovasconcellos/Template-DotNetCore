@@ -33,7 +33,10 @@ namespace Template.Application.Services
         }
 
         public bool Post (UserViewModel userViewModel)
-        {         
+        {
+            if (userViewModel.Id != Guid.Empty)
+                throw new Exception("UserID must be empty");
+
             //destino(User) <- origem(userViewModel)
             User _user = mapper.Map<User>(userViewModel);
 
@@ -45,10 +48,8 @@ namespace Template.Application.Services
         public UserViewModel GetById(string id)
         {
             //se não consegui tranformar em guid - o id vai ser inserido no userId
-            if(!Guid.TryParse(id, out Guid userId))
-            {
-                throw new Exception("UserId is not valid");
-            }
+            if (!Guid.TryParse(id, out Guid userId))
+                throw new Exception("UserID is not valid");
 
             //recupera o usuario não deletado
             User _user = this.userRepository.Find(x => x.Id == userId && !x.IsDeleted);
@@ -61,6 +62,9 @@ namespace Template.Application.Services
 
         public bool Put(UserViewModel  userViewModel)
         {
+            if (userViewModel.Id == Guid.Empty)
+                throw new Exception("ID is invalid");
+
             //recupera um objeto realiza o tracked(monitorado) e altera
             User _user = this.userRepository.Find(x => x.Id == userViewModel.Id && !x.IsDeleted);
 
@@ -77,11 +81,9 @@ namespace Template.Application.Services
 
         public bool Delete (string id)
         {
-            //se não consegui tranformar em guid - o id vai ser inserido no userId
+            //se não consegui tranformar em guid - o id vai ser inserido no userId            
             if (!Guid.TryParse(id, out Guid userId))
-            {
-                throw new Exception("UserId is not valid");
-            }
+                throw new Exception("UserID is not valid");
 
             //recupera o usuario não deletado
             User _user = this.userRepository.Find(x => x.Id == userId && !x.IsDeleted);
@@ -93,6 +95,9 @@ namespace Template.Application.Services
 
         public UserAuthenticateResponseViewModel Authenticate(UserAuthenticateRequestViewModel user)
         {
+            if (string.IsNullOrEmpty(user.Email) || string.IsNullOrEmpty(user.Password))
+                throw new Exception("Email/Password are required.");
+
             //recupera o usuario do banco
             User _user = this.userRepository.Find(x => !x.IsDeleted && x.Email.ToLower() == user.Email.ToLower());
             if (_user == null)
