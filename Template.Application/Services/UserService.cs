@@ -2,6 +2,7 @@
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
+using System.Security.Cryptography;
 using System.Text;
 using Template.Application.Interfaces;
 using Template.Application.ViewModels;
@@ -44,6 +45,8 @@ namespace Template.Application.Services
             //destino(User) <- origem(userViewModel)
             User _user = mapper.Map<User>(userViewModel);
 
+            _user.Password = EncryptPassword(_user.Password);
+
             this.userRepository.Create(_user);
 
             return true;
@@ -77,6 +80,8 @@ namespace Template.Application.Services
 
             _user = mapper.Map<User>(userViewModel);
 
+            _user.Password = EncryptPassword(_user.Password);
+
             //informa que esse objeto esta tracked, por isso precisamos informar no metodo FIND inclui o AsNoTracking().
             this.userRepository.Update(_user);
 
@@ -102,14 +107,32 @@ namespace Template.Application.Services
             if (string.IsNullOrEmpty(user.Email) || string.IsNullOrEmpty(user.Password))
                 throw new Exception("Email/Password are required.");
 
+            user.Password = EncryptPassword(user.Password);
+
             //recupera o usuario do banco
-            User _user = this.userRepository.Find(x => !x.IsDeleted && x.Email.ToLower() == user.Email.ToLower());
+            User _user = this.userRepository.Find(x => !x.IsDeleted && x.Email.ToLower() == user.Email.ToLower()
+                                                        && x.Password.ToLower() == user.Password.ToLower());
             if (_user == null)
                 throw new Exception("User not found");
 
             //preenche o objeto UserViewModel com o objeto _user e cria o token, chama o construtor UserAuthenticateResponseViewModel
             //devolve o objeto UserAuthenticateResponseViewModel
             return new UserAuthenticateResponseViewModel(mapper.Map<UserViewModel>(_user), TokenService.GenerateToken(_user));
+        }
+
+        private string EncryptPassword(string password)
+        {
+            HashAlgorithm sha = new SHA1CryptoServiceProvider();
+
+            byte[] encryptedPassword = sha.ComputeHash(Encoding.UTF8.GetBytes(password));
+
+            StringBuilder stringBuilder = new StringBuilder();
+            foreach (var caracter in encryptedPassword)
+            {
+                stringBuilder.Append(caracter.ToString("X2"));
+            }
+
+            return stringBuilder.ToString();
         }
     }
 }
