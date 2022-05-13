@@ -26,6 +26,10 @@
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
+    <PackageReference Include="Microsoft.TypeScript.MSBuild" Version="4.6.4">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+    </PackageReference>
   </ItemGroup>
 
   <ItemGroup>
@@ -36,10 +40,18 @@
   </ItemGroup>
 
   <ItemGroup>
+    <None Remove="ClientApp\src\app\_data-services\user.data-services.ts" />
+  </ItemGroup>
+
+  <ItemGroup>
     <ProjectReference Include="..\Template.Auth\Template.Auth.csproj" />
     <ProjectReference Include="..\Template.Data\Template.Data.csproj" />
     <ProjectReference Include="..\Template.IoC\Template.IoC.csproj" />
     <ProjectReference Include="..\Template.Swagger\Template.Swagger.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <TypeScriptCompile Include="ClientApp\src\app\_data-services\user.data-services.ts" />
   </ItemGroup>
 
   <Target Name="DebugEnsureNodeEnv" BeforeTargets="Build" Condition=" '$(Configuration)' == 'Debug' And !Exists('$(SpaRoot)node_modules') ">
