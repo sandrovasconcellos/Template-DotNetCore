@@ -11,6 +11,8 @@ export class UsersComponent implements OnInit {
 
   //array de um objeto não definido, sendo inicialida como vazio
   users: any[] = [];
+  user: any = {};
+  showList: boolean = true;
 
   constructor( private userDataService: UserDataService) { }
 
@@ -26,13 +28,27 @@ export class UsersComponent implements OnInit {
     //error - recebe caso ocorra erro
     this.userDataService.get().subscribe((data: any []) => {
       this.users = data;
+      this.showList = true;
     }, error => {
       console.log(error);
-      alert('erro interno do sistema');
+      alert('Erro interno do sistema');
     })
-
   }
 
+  post() {
+    this.userDataService.post(this.user).subscribe(data => {
+      if (data) {
+        alert('Usuario cadastrado com sucesso!');
+        this.get();
+        this.user = {};
+      } else {
+        alert('Erro ao cadastrar usurio!');
+      }
+    }, error => {
+      console.log(error);
+      alert('Erro interno do sistema');
+    });
+  }
 }
 
 

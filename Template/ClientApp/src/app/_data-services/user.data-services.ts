@@ -16,4 +16,10 @@ export class UserDataService {
   get() {
     return this.http.get(this.module);
   }
+
+  //o metodo post necessita de body
+  post(data) {
+    return this.http.post(this.module, data);
+  }
+
 }

@@ -1,21 +1,44 @@
+
+<button class="btn-primary" (click)="showList = !showList">{{showList ? 'Novo Usuário' : 'Lista de Usuários'}}</button>
+
 <!--o ? é utilizado para que não de erro pois a variavel pode ainda não ter valor-->
 <p>Users({{users?.length}})</p>
 
-<table class="table">
-  <thead>
-    <tr>
-      <th scope="col">Action</th>
-      <th scope="col">Id</th>
-      <th scope="col">Name</th>
-      <th scope="col">Email</th>
-    </tr>
-  </thead>
-  <tbody>
-    <tr *ngFor="let user of users">
-      <th scope="row"><buton class="btn-primary">Editar</buton></th>
-      <th scope="row">{{user.id}}</th>
-      <th scope="row">{{user.name}}</th>
-      <th scope="row">{{user.email}}</th>
-    </tr>
-  </tbody>
-</table>
+<div *ngIf="showList">
+  <table class="table">
+    <thead>
+      <tr>
+        <th scope="col">Action</th>
+        <th scope="col">Id</th>
+        <th scope="col">Name</th>
+        <th scope="col">Email</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr *ngFor="let user of users">
+        <th scope="row"><button class="btn-primary">Editar</button></th>
+        <th scope="row">{{user.id}}</th>
+        <th scope="row">{{user.name}}</th>
+        <th scope="row">{{user.email}}</th>
+      </tr>
+    </tbody>
+  </table>
+</div>
+
+<div *ngIf="!showList">
+  <form>
+    <div class="form-group">
+      <label for="exampleInputName">Name:</label>
+      <input type="text" class="form-control" id="exampleInputName" aria-describedby="nameHelp" placeholder="Name" [(ngModel)]="user.name" name="name">
+    </div>
+    <div class="form-group">
+      <label for="exampleInputEmail">Email:</label>
+      <input type="email" class="form-control" id="exampleInputEmail" placeholder="Email" [(ngModel)]="user.email" name="email">
+    </div>
+    <div class="form-group">
+      <label for="exampleInputPassword">Password:</label>
+      <input type="password" class="form-control" id="exampleInputPassword" placeholder="Password" [(ngModel)]="user.password" name="password">
+    </div>
+    <button type="submit" class="btn btn-primary" (click)="post()">Save</button>
+  </form>
+</div>
