@@ -35,6 +35,19 @@ export class UsersComponent implements OnInit {
     })
   }
 
+  save() {
+    if (this.user.id) {
+      this.put();
+    } else {
+      this.post();
+    }
+  }
+
+  openDetails(user) {
+    this.showList = false;
+    this.user = user;
+  }
+
   post() {
     this.userDataService.post(this.user).subscribe(data => {
       if (data) {
@@ -49,6 +62,22 @@ export class UsersComponent implements OnInit {
       alert('Erro interno do sistema');
     });
   }
+
+  put() {
+    this.userDataService.put(this.user).subscribe(data => {
+      if (data) {
+        alert('Usuario alterado com sucesso!');
+        this.get();
+        this.user = {};
+      } else {
+        alert('Erro ao alterar usurio!');
+      }
+    }, error => {
+      console.log(error);
+      alert('Erro interno do sistema');
+    });
+  }
+  
 }
 
 
