@@ -12,7 +12,8 @@ export class UserDataService {
   constructor(private http: HttpClient) {
   }
 
-  //metodo
+  //metodos de comunicação com a API
+
   get() {
     return this.http.get(this.module);
   }
@@ -24,6 +25,14 @@ export class UserDataService {
 
   put(data) {
     return this.http.put(this.module, data);
+  }
+
+  delete(userId) {
+    return this.http.delete(this.module + '/' + userId);
+  }
+
+  authenticate(data) {
+    return this.http.post(this.module + '/authenticate', data);
   }
 
 }

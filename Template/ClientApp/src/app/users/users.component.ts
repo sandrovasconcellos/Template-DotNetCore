@@ -12,13 +12,16 @@ export class UsersComponent implements OnInit {
   //array de um objeto não definido, sendo inicialida como vazio
   users: any[] = [];
   user: any = {};
+  userLogin: any = {};
+  userLogged: any = {};
   showList: boolean = true;
+  isAuthenticated: boolean = false;
 
   constructor( private userDataService: UserDataService) { }
 
   //chamada toda vez que é chamada
   ngOnInit() {
-    this.get();
+    
   }
 
   get() {
@@ -70,12 +73,48 @@ export class UsersComponent implements OnInit {
         this.get();
         this.user = {};
       } else {
-        alert('Erro ao alterar usurio!');
+        alert('Erro ao alterar usuario!');
       }
     }, error => {
       console.log(error);
       alert('Erro interno do sistema');
     });
+  }
+
+  delete() {
+    this.userDataService.delete(this.user.id).subscribe(data => {
+      if (data) {
+        alert('Usuario excluir com sucesso!');
+        this.get();
+        this.user = {};
+      } else {
+        alert('Erro ao excluir usuario!');
+      }
+    }, error => {
+      console.log(error);
+      alert('Erro interno do sistema');
+    });
+  }
+
+  authenticate() {
+    //data é uma variavel do tipo any
+    this.userDataService.authenticate(this.userLogin).subscribe((data:any) => {
+      if (data.user) {
+        localStorage.setItem('user_logged', JSON.stringify(data));
+        this.get();
+        this.getUserData();
+      } else {
+        alert('Usuário inválido.');
+      }
+    }, error => {
+      console.log(error);
+      alert('Usuário não encontrado.');
+    });
+  }
+
+  getUserData() {
+    this.userLogged = JSON.parse(localStorage.getItem('user_logged'));
+    this.isAuthenticated = this.userLogged != null;
   }
   
 }
