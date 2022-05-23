@@ -27,7 +27,7 @@ namespace Template.Controllers
             this.userService = userService;
         }
 
-        [HttpGet, AllowAnonymous]
+        [HttpGet]
         public IActionResult Get()
         {
             return Ok(this.userService.Get());
@@ -50,19 +50,20 @@ namespace Template.Controllers
             return Ok(this.userService.GetById(id));
         }
 
-        [HttpPut, AllowAnonymous]
+        [HttpPut]
         public IActionResult Put(UserViewModel userViewModel)
         {
             return Ok(this.userService.Put(userViewModel));
         }
 
-        [HttpDelete("{userId}"), AllowAnonymous]
-        public IActionResult Delete(string userId)
+        [HttpDelete]
+        public IActionResult Delete()
         {
             //garante que so terá acesso o id logado.
-           // string _userId = TokenService.GetValueFromClaim(HttpContext.User.Identity, ClaimTypes.NameIdentifier);
+            //o usuario logado só pode excluir a conta dele mesmo
+            string _userId = TokenService.GetValueFromClaim(HttpContext.User.Identity, ClaimTypes.NameIdentifier);
 
-            return Ok(this.userService.Delete(userId));
+            return Ok(this.userService.Delete(_userId));
         }
 
         //nome da API

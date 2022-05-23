@@ -82,7 +82,7 @@ export class UsersComponent implements OnInit {
   }
 
   delete() {
-    this.userDataService.delete(this.user.id).subscribe(data => {
+    this.userDataService.delete().subscribe(data => {
       if (data) {
         alert('Usuario excluir com sucesso!');
         this.get();
